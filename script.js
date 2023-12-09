@@ -1,12 +1,23 @@
-
+let menuLinks = [
+  {text: 'about', href: '/about'},
+  {text: 'catalog', href: '#', subLinks: [
+    {text: 'all', href: '/catalog/all'},
+    {text: 'top selling', href: '/catalog/top'},
+    {text: 'search', href: '/catalog/search'},
+  ]},
+  {text: 'orders', href: '#' , subLinks: [
+    {text: 'new', href: '/orders/new'},
+    {text: 'pending', href: '/orders/pending'},
+    {text: 'history', href: '/orders/history'},
+  ]},
+  {text: 'account', href: '#', subLinks: [
+    {text: 'profile', href: '/account/profile'},
+    {text: 'sign out', href: '/account/signout'},
+  ]},
+];
 //Part 1
-//1 Select and Cache <main> Element:
+
 let mainEl = document.querySelector("main");
-console.log("Part 1 1.1", mainEl);
-//2 Set Background Color:
-// Use mainEl.style.backgroundColor = 'var(--main-bg)'
-// to set the background color using
-// the CSS custom property.
 mainEl.style.backgroundColor = "var(--main-bg)";
 //3Set Content: Use mainEl.innerHTML = '<h1>DOM Manipulation</h1>' to set the content.
 // mainEl.innerHTML = "<h1> DOM Manipulation IS VERY FUN<h1>";
@@ -55,7 +66,6 @@ mainEl.classList.add("flex-ctr");
 //1.Select and Cache the Menu Bar Element:
 // Select the menu bar element with ID 'top-menu'
 let topMenuEl = document.querySelector("#top-menu");
-console.log("Top Menu Element: ", topMenuEl);
 //2Style the Menu Bar:
 //2.1 Set its height to 100%:
 topMenuEl.style.height = "100%";
@@ -64,14 +74,7 @@ topMenuEl.style.backgroundColor = "var(--top-menu-bg)";
 //Add a flex-around class for layout:
 topMenuEl.classList.add("flex-around");
 
-//Part 3: Adding Menu Buttons
-//Copy the menuLinks Array:
-const menuLinks = [
-  { href: "link1.html", text: "About" },
-  { href: "link2.html", text: "CATALOG" },
-  { href: "link3.html", text: "ORDERS" },
-  { href: "link4.html", text: "ACCOUNT" },
-];
+
 //Iterate Over menuLinks:
 menuLinks.forEach((eachMenulink) => {
   // Create an <a> element
@@ -86,3 +89,94 @@ menuLinks.forEach((eachMenulink) => {
   // Append the new element to topMenuEl
   console.log("Those are the appended links", topMenuEl.appendChild(aElement));
 });
+
+
+//Part3
+// Select and cache the <nav id="sub-menu"> element
+let subMenuEl = document.querySelector("#sub-menu");
+
+// Style subMenuEl: Set its height and background color
+subMenuEl.style.height = "100%";
+subMenuEl.style.backgroundColor = "var(--sub-menu-bg)";
+
+// Add the 'flex-around' class to subMenuEl
+subMenuEl.classList.add("flex-around");
+
+// Position subMenuEl: Set CSS position property to absolute and top property to 0
+subMenuEl.style.position = "absolute";
+subMenuEl.style.top = "0";
+
+
+//Part 4
+topMenuEl.querySelector("a").addEventListener("click", (event) => {
+  event.preventDefault(); // Prevent default link behavior
+
+  // Check if the clicked element is an <a> tag
+  if (event.target.tagName === 'A') {
+    
+      const linkText = event.target.textContent.trim().toUpperCase();
+      const menuLink = menuLinks.find(link => link.text.toUpperCase() === linkText);
+
+      if (menuLink && menuLink.subLinks) {
+          // Show submenu if there are subLinks
+          subMenuEl.style.top = "100%";
+          buildSubmenu(menuLink.subLinks); 
+      } else {
+          // Hide submenu
+          subMenuEl.style.top = "0";
+      }
+
+    
+    }
+});
+// Initialize the menu once the page loads
+document.addEventListener('DOMContentLoaded', () => {
+  createMainMenu();
+});
+
+function createMainMenu() {
+  // Clear existing main menu content
+  topMenuEl.innerHTML = '';
+
+  menuLinks.forEach((menuItem) => {
+      const aElement = document.createElement("a");
+      aElement.href = menuItem.href;
+      aElement.textContent = menuItem.text;
+      topMenuEl.appendChild(aElement);
+  });
+}
+
+// Event delegation for main menu
+topMenuEl.addEventListener("click", (event) => {
+  event.preventDefault(); // Prevent default link behavior
+
+  if (event.target.tagName === 'A') {
+      const linkText = event.target.textContent.trim().toLowerCase();
+      const menuLink = menuLinks.find(link => link.text.toLowerCase() === linkText);
+
+      if (menuLink && menuLink.subLinks) {
+          displaySubmenu(menuLink.subLinks);
+      } else {
+          // Hide submenu
+          subMenuEl.style.top = "0";
+      }
+  }
+});
+
+function displaySubmenu(subLinks) {
+  // Clear existing submenu content
+  subMenuEl.innerHTML = '';
+
+  subLinks.forEach((submenuItem) => {
+      const submenuLink = document.createElement("a");
+      submenuLink.href = submenuItem.href;
+      submenuLink.textContent = submenuItem.text;
+      subMenuEl.appendChild(submenuLink);
+  });
+
+  // Show the submenu
+  subMenuEl.style.top = "100%";
+}
+
+
+
